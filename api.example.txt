@@ -1,29 +1,29 @@
-# Provider priority order (comma-separated): scraperapi,browserless,rapidapi,amadeus,serpapi
-PROVIDER_PRIORITY=scraperapi,browserless,rapidapi,amadeus,serpapi
+# Provider priority order (free-tier optimized): rapidapi,serpapi,scraperapi,browserless,amadeus
+PROVIDER_PRIORITY=rapidapi,serpapi,scraperapi,browserless,amadeus
 
 # Minimum number of results to aim for; fallback providers are queried if below this.
 MIN_RESULTS=7
 
-# SerpAPI fallback
+# SerpAPI
 SERPAPI_KEY=
 
-# ScraperAPI (priority #1 if configured)
+# ScraperAPI (fallback/proxy)
 SCRAPERAPI_KEY=
 SCRAPERAPI_PREMIUM=1
 SCRAPERAPI_ULTRA_PREMIUM=0
 SCRAPERAPI_TIMEOUT_SEC=20
 
-# Browserless (priority #2 if configured)
+# Browserless (fallback/proxy)
 BROWSERLESS_TOKEN=
 BROWSERLESS_BASE=https://chrome.browserless.io
 
-# Amadeus (optional primary)
+# Amadeus (optional)
 AMADEUS_CLIENT_ID=
 AMADEUS_CLIENT_SECRET=
 AMADEUS_HOST=test.api.amadeus.com
 AMADEUS_MAX_RESULTS=30
 
-# RapidAPI lodging provider (optional primary)
+# RapidAPI lodging provider (recommended primary for stay search)
 # If using booking-com15.p.rapidapi.com, RAPIDAPI_SEARCH_PATH is not needed.
 RAPIDAPI_KEY=
 RAPIDAPI_HOST=

@@ -17,7 +17,7 @@ HOST = os.getenv("HOST", "127.0.0.1")
 PORT = int(os.getenv("PORT", "8790"))
 MAX_WORKERS = int(os.getenv("MAX_WORKERS", "8"))
 
-PROVIDER_PRIORITY = [p.strip().lower() for p in os.getenv("PROVIDER_PRIORITY", "scraperapi,browserless,rapidapi,serpapi").split(",") if p.strip()]
+PROVIDER_PRIORITY = [p.strip().lower() for p in os.getenv("PROVIDER_PRIORITY", "rapidapi,serpapi,scraperapi,browserless,amadeus").split(",") if p.strip()]
 MIN_RESULTS = int(os.getenv("MIN_RESULTS", "7"))
 
 SERPAPI_KEY = os.getenv("SERPAPI_KEY", "").strip()
@@ -346,6 +346,54 @@ def configured_providers():
     if not available and SERPAPI_KEY:
         available = ["serpapi"]
     return available
+
+
+def provider_validation():
+    checks = []
+
+    checks.append(
+        {
+            "provider": "rapidapi",
+            "configured": bool(RAPIDAPI_KEY and RAPIDAPI_HOST),
+            "required": ["RAPIDAPI_KEY", "RAPIDAPI_HOST", "RAPIDAPI_SEARCH_PATH (or booking host auto-flow)"],
+            "free_tier_notes": "Varies by API listing. Must subscribe to each API; quotas are often low on free/basic plans.",
+        }
+    )
+    checks.append(
+        {
+            "provider": "serpapi",
+            "configured": bool(SERPAPI_KEY),
+            "required": ["SERPAPI_KEY"],
+            "free_tier_notes": "Free tier has limited monthly searches; account can run out quickly.",
+        }
+    )
+    checks.append(
+        {
+            "provider": "scraperapi",
+            "configured": bool(SCRAPERAPI_KEY and SERPAPI_KEY),
+            "required": ["SCRAPERAPI_KEY", "SERPAPI_KEY"],
+            "free_tier_notes": "Proxying API endpoints may fail depending on target. Premium/ultra_premium may be required for protected domains.",
+        }
+    )
+    checks.append(
+        {
+            "provider": "browserless",
+            "configured": bool(BROWSERLESS_TOKEN and SERPAPI_KEY),
+            "required": ["BROWSERLESS_TOKEN", "SERPAPI_KEY", "BROWSERLESS_BASE(optional)"],
+            "free_tier_notes": "May require paid plan for stable usage; /content for API JSON proxying can be unreliable.",
+        }
+    )
+    checks.append(
+        {
+            "provider": "amadeus",
+            "configured": bool(AMADEUS_CLIENT_ID and AMADEUS_CLIENT_SECRET),
+            "required": ["AMADEUS_CLIENT_ID", "AMADEUS_CLIENT_SECRET", "AMADEUS_HOST(optional)"],
+            "free_tier_notes": "Self-service test environment available with limited quotas; requires registration.",
+        }
+    )
+
+    recommended_order = ["rapidapi", "serpapi", "scraperapi", "browserless", "amadeus"]
+    return {"checks": checks, "recommended_free_tier_order": recommended_order}
 
 
 def get_amadeus_token():
@@ -895,11 +943,25 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path.startswith("/health"):
+            validation = provider_validation()
             write_json(self, 200, {
                 "status": "ok",
                 "providers_configured": configured_providers(),
+                "provider_priority": PROVIDER_PRIORITY,
+                "provider_validation": validation,
                 "cache_ttl_sec": CACHE_TTL_SEC,
             })
+            return
+        if self.path.startswith("/providers/validate"):
+            write_json(
+                self,
+                200,
+                {
+                    "status": "ok",
+                    "provider_priority": PROVIDER_PRIORITY,
+                    **provider_validation(),
+                },
+            )
             return
         write_json(self, 404, {"error": "Not found"})
 
