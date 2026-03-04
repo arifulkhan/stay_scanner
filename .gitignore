@@ -1,0 +1,4 @@
+api.txt
+stay_cache.sqlite3
+__pycache__/
+*.pyc

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stay Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <h1>Stay Scanner</h1>
+      <p>Find hotel and vacation-rental options within 25 miles, filtered for quality, family fit, and cancellation flexibility.</p>
+    </header>
+
+    <section class="panel">
+      <form id="searchForm" class="form-grid">
+        <label>City
+          <input id="city" required placeholder="Seattle" value="Seattle" />
+        </label>
+        <label>Check-in
+          <input id="checkIn" type="date" required />
+        </label>
+        <label>Check-out
+          <input id="checkOut" type="date" required />
+        </label>
+        <label>Travelers
+          <input id="travelers" type="number" min="1" max="20" value="2" required />
+        </label>
+        <label>Rooms
+          <input id="rooms" type="number" min="1" max="10" value="1" required />
+        </label>
+        <label>API Endpoint
+          <input id="apiBase" value="http://127.0.0.1:8790" />
+        </label>
+        <button id="searchBtn" type="submit">Search stays</button>
+        <button id="csvBtn" type="button" disabled>Export CSV</button>
+      </form>
+    </section>
+
+    <section class="panel status" id="status">Ready.</section>
+
+    <section class="results-head">
+      <h2>Results</h2>
+      <div id="meta"></div>
+    </section>
+
+    <section id="results" class="results"></section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
